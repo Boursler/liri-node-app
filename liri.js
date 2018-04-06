@@ -90,6 +90,18 @@ function spotifyThisSong() {
 			console.log(error);
 	});
 }
+
+function doWhatItSays() {
+	fs.readFile("random.txt", "utf8", function (err, data) {
+		if (err) {
+			return console.log(err);
+		}
+		else {
+			data.split(",");
+		}
+	});
+}
 // movieThis();
 // myTweets();
-spotifyThisSong();
+// spotifyThisSong();
+doWhatItSays();
