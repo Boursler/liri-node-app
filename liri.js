@@ -5,9 +5,6 @@ var twitter = require("twitter");
 var fs = require("fs");
 var request = require("request");
 
-
-
-
 function movieThis(movieName) {
 
 	var movieURL = "";
@@ -50,10 +47,6 @@ function myTweets() {
 			console.log(error);
 	});
 }
-// Artist(s)
-// The song's name
-// A preview link of the song from Spotify
-// The album that the song is from
 
 function spotifyThisSong(song) {
 	var spot = new spotify(keys.spotify);
@@ -78,58 +71,39 @@ function doWhatItSays() {
 	var doWhat = {};
 	var method;
 	var name;
-	fs.readFile("random.txt", "utf8", function (err, data) {
-		console.log("hello");
-		if (err) {
-			console.log(err);
-		}
-		else {
-			dataArr = data.split(",");
-			method = dataArr[0];
-			name = dataArr[1].split(" ");
-			doWhat = { method: method, name: name };
-			console.log("deepest scope " + doWhat.method);
-			console.log("higher level " + JSON.stringify(doWhat));
-
-			return doWhat;
-		}
-
-	});
-
+	//read synchronously to avoid timing issue
+	data = fs.readFileSync("random.txt", "utf8");
+	console.log("hello");
+	//split data into a comma-separated array
+	dataArr = data.split(",");
+	//method argument will be that array at 0-index
+	method = dataArr[0];
+	//split the remaining index at spaces to return an array similar to process.argv for the remaining argument
+	name = dataArr[1].split(" ");
+	doWhat = { method: method, name: name };
+	console.log("deepest scope " + doWhat.method);
+	console.log("higher level " + JSON.stringify(doWhat));
+	//return the object for later use
+	return doWhat;
 }
-// movieThis();
-// myTweets();
-// spotifyThisSong();
-// doWhatItSays();
-// `my-tweets`
-// * `spotify-this-song`
-// * `movie-this`
-// * `do-what-it-says`
 
 function dispatch() {
-	// console.log(param);
-	// setTimeout(variables, 500);
-	// choice = itSays.method;
-	// argument = itSays.name;
+	//set default values of choice and argument, initialize itSays to empty object
 	var choice = process.argv[2];
 	var argument = process.argv.slice[3];
-	// var itSays = {};
-	// if (choice === "do-what-it-says") {
-	// 	itSays = doWhatItSays();
-	// 	// console.log("itSays " + JSON.stringify(itSays));
-
-	// 	choice = itSays.method;
-	// 	argument = itSays.name;
-
-
-	// };
+	var itSays = {};
+	//if value of 'choice' is 'do-what-it-says, replace normal arguments with values from files
+	if (choice === "do-what-it-says") {
+		itSays = doWhatItSays();
+		console.log("itSays " + JSON.stringify(itSays));
+		choice = itSays.method;
+		argument = itSays.name;
+	}
 	console.log("choice value + " + choice);
 	if (choice === "my-tweets") {
-		console.log("my tweets");
 		myTweets();
 	}
 	else if (choice === "spotify-this-song") {
-		console.log("spotify");
 		var song = "";
 		for (var i = 0; i < argument.length; i++) {
 			if (i > 0 && i < argument.length) {
@@ -139,7 +113,6 @@ function dispatch() {
 				song = argument[i];
 		}
 		spotifyThisSong(song);
-		console.log(song);
 	}
 	else if (choice === "movie-this") {
 		var movieName = "";
