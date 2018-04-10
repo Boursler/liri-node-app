@@ -40,7 +40,7 @@ function myTweets() {
 	var params = { screen_name: 'Bowzler', count: '20' };
 	client.get('statuses/user_timeline', params, function (error, tweets, response) {
 		if (!error) {
-			console.log(tweets);
+
 			for (var i = 0; i < tweets.length; i++) {
 				console.log("Tweet: " + tweets[i].text);
 				console.log("Created at: " + tweets[i].created_at);
@@ -81,19 +81,21 @@ function doWhatItSays() {
 	fs.readFile("random.txt", "utf8", function (err, data) {
 		console.log("hello");
 		if (err) {
-			return console.log(err);
+			console.log(err);
 		}
 		else {
 			dataArr = data.split(",");
 			method = dataArr[0];
 			name = dataArr[1].split(" ");
 			doWhat = { method: method, name: name };
-			console.log(doWhat);
+			console.log("deepest scope " + doWhat.method);
+			console.log("higher level " + JSON.stringify(doWhat));
 
+			return doWhat;
 		}
 
 	});
-	return doWhat;
+
 }
 // movieThis();
 // myTweets();
@@ -105,15 +107,22 @@ function doWhatItSays() {
 // * `do-what-it-says`
 
 function dispatch() {
+	// console.log(param);
+	// setTimeout(variables, 500);
+	// choice = itSays.method;
+	// argument = itSays.name;
 	var choice = process.argv[2];
 	var argument = process.argv.slice[3];
-	var itSays = {};
-	if (choice === "do-what-it-says") {
-		itSays = doWhatItSays();
-		console.log("itSays " + JSON.stringify(itSays));
-		choice = itSays.method;
-		argument = itSays.name;
-	};
+	// var itSays = {};
+	// if (choice === "do-what-it-says") {
+	// 	itSays = doWhatItSays();
+	// 	// console.log("itSays " + JSON.stringify(itSays));
+
+	// 	choice = itSays.method;
+	// 	argument = itSays.name;
+
+
+	// };
 	console.log("choice value + " + choice);
 	if (choice === "my-tweets") {
 		console.log("my tweets");
