@@ -8,20 +8,12 @@ var request = require("request");
 
 
 
-function movieThis() {
-	var movieName = "";
+function movieThis(movieName) {
+
 	var movieURL = "";
-	if (process.argv.length === 2)
+	if (movieName === 0)
 		movieName = "Mr. Nobody"
-	else {
-		for (var i = 2; i < process.argv.length; i++) {
-			if (i > 2 && i < process.argv.length) {
-				movieName += "+" + process.argv[i];
-			}
-			else
-				movieName = process.argv[i];
-		}
-	}
+
 	movieURL = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
 	console.log(movieURL + "movie URL");
 
@@ -63,21 +55,11 @@ function myTweets() {
 // A preview link of the song from Spotify
 // The album that the song is from
 
-function spotifyThisSong() {
+function spotifyThisSong(song) {
 	var spot = new spotify(keys.spotify);
-	var song = "";
-	if (process.argv.length === 2)
+	if (song === "")
 		song = "The Sign";
-	else {
-		for (var i = 2; i < process.argv.length; i++) {
-			if (i > 2 && i < process.argv.length) {
-				song += "%20" + process.argv[i];
-			}
-			else
-				song = process.argv[i];
-		}
-	}
-	console.log(song);
+
 	spot.search({ type: 'track', query: song, limit: 1 }, function (error, data) {
 		if (!error) {
 			console.log("Artist(s): " + JSON.stringify(data.tracks.items[0].album.artists[0].name, null, 2) + "\n"
@@ -92,16 +74,74 @@ function spotifyThisSong() {
 }
 
 function doWhatItSays() {
+	var dataArr = [];
+	var doWhat = {};
+	var method;
+	var name;
 	fs.readFile("random.txt", "utf8", function (err, data) {
+		console.log("hello");
 		if (err) {
 			return console.log(err);
 		}
 		else {
-			data.split(",");
+			dataArr = data.split(",");
+			method = dataArr[0];
+			name = dataArr[1].split(" ");
+			doWhat = { method: method, name: name };
+			console.log(doWhat);
+
 		}
+
 	});
+	return doWhat;
 }
 // movieThis();
 // myTweets();
 // spotifyThisSong();
-doWhatItSays();
+// doWhatItSays();
+// `my-tweets`
+// * `spotify-this-song`
+// * `movie-this`
+// * `do-what-it-says`
+
+function dispatch() {
+	var choice = process.argv[2];
+	var argument = process.argv.slice[3];
+	var itSays = {};
+	if (choice === "do-what-it-says") {
+		itSays = doWhatItSays();
+		console.log("itSays " + JSON.stringify(itSays));
+		choice = itSays.method;
+		argument = itSays.name;
+	};
+	console.log("choice value + " + choice);
+	if (choice === "my-tweets") {
+		console.log("my tweets");
+		myTweets();
+	}
+	else if (choice === "spotify-this-song") {
+		console.log("spotify");
+		var song = "";
+		for (var i = 0; i < argument.length; i++) {
+			if (i > 0 && i < argument.length) {
+				song += "%20" + argument[i];
+			}
+			else
+				song = argument[i];
+		}
+		spotifyThisSong(song);
+		console.log(song);
+	}
+	else if (choice === "movie-this") {
+		var movieName = "";
+		for (var i = 0; i < argument.length; i++) {
+			if (i > 0 && i < argument.length) {
+				movieName += "+" + argument[i];
+			}
+			else
+				movieName = argument[i];
+		}
+		movieThis(movieName);
+	}
+}
+dispatch();
